@@ -1,0 +1,17 @@
+{
+  "name": "1",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "build.js",
+  "scripts": {
+    "start": "node --watch src build.js; node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.19.2",
+    "express": "^4.18.2"
+  }
+}
