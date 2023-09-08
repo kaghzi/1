@@ -2,7 +2,7 @@ import esbuild from 'esbuild'
 import server from 'apprun-dev-server'
 
 await esbuild.build({
-    entryPoints:['src/index.js'],
+    entryPoints:['src/index.tsx'],
     outfile:'app.js',
     bundle: true,
     watch: true
