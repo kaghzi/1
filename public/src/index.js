@@ -70,7 +70,9 @@ function imgClick(jsonData, i)
     //   console.log(b64fn);
 
     //   const imageUrl = "/url/image/"+b64fn + '.jpg';
-      const iu=new imageUtils(jsonData);
+      const onlyPics = jsonData.filter(p=>p.fn.endsWith('.jpg'));
+      console.log(onlyPics);
+      const iu=new imageUtils(onlyPics);
       iu.showImageFullscreen(i);
 }
 

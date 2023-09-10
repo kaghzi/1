@@ -1,5 +1,6 @@
 export default class imageUtils {    
     jsonData;
+    currentIndex;
     keyDownListener;
 
     constructor(jsonData){
@@ -8,6 +9,7 @@ export default class imageUtils {
 
     showImageFullscreen(i) {
       console.log('In showImageFullscreen..........', i);
+      this.currentIndex=i;
       const b64fn = this.jsonData[i].b64fn;
       console.log(b64fn);
       const imageUrl = "/url/image/"+b64fn + '.jpg';
@@ -24,6 +26,7 @@ export default class imageUtils {
     
       // Create an image element and set its source
       const img = new Image();
+      img.id = 'imgFullScreen';
       img.src = imageUrl;
       img.style.width = '100%';
       img.style.height = '100%';
@@ -64,8 +67,49 @@ export default class imageUtils {
           if (document.fullscreenElement) document.exitFullscreen();
           fullscreenDiv.remove();
         }
+        
+        if (e.key === 'ArrowRight') {
+          this.showNextImage();
+        }
+        if (e.key === 'ArrowLeft') {
+          this.showPrevImage();
+        }
     }
 
+    showNextImage()
+    {
+      console.log('In .............showNextImage', this.currentIndex);
+      if((this.currentIndex + 1) < this.jsonData.length){
+          this.currentIndex++;
+          const imgFullScreen = document.getElementById('imgFullScreen');
+
+          
+          const b64fn = this.jsonData[this.currentIndex].b64fn;
+          console.log(b64fn);
+          const imageUrl = "/url/image/"+b64fn + '.jpg';
+
+          imgFullScreen.src = imageUrl;
+      }
+
+    }
+    
+    showPrevImage()
+    {
+      console.log('In .............showPrevImage', this.currentIndex);
+      if(this.currentIndex > 0)
+      {
+        this.currentIndex--;
+        const imgFullScreen = document.getElementById('imgFullScreen');
+
+        
+        const b64fn = this.jsonData[this.currentIndex].b64fn;
+        console.log(b64fn);
+        const imageUrl = "/url/image/"+b64fn + '.jpg';
+
+        imgFullScreen.src = imageUrl;
+      }
+
+    }
   
   // Function to enter fullscreen
   toggleFullscreen(element) {

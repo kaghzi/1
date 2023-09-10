@@ -14,12 +14,14 @@
   // src/imageUtils.js
   var imageUtils = class {
     jsonData;
+    currentIndex;
     keyDownListener;
     constructor(jsonData) {
       this.jsonData = jsonData;
     }
     showImageFullscreen(i) {
       console.log("In showImageFullscreen..........", i);
+      this.currentIndex = i;
       const b64fn = this.jsonData[i].b64fn;
       console.log(b64fn);
       const imageUrl = "/url/image/" + b64fn + ".jpg";
@@ -32,6 +34,7 @@
       fullscreenDiv.style.height = "100%";
       fullscreenDiv.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
       const img = new Image();
+      img.id = "imgFullScreen";
       img.src = imageUrl;
       img.style.width = "100%";
       img.style.height = "100%";
@@ -66,6 +69,34 @@
         if (document.fullscreenElement)
           document.exitFullscreen();
         fullscreenDiv.remove();
+      }
+      if (e.key === "ArrowRight") {
+        this.showNextImage();
+      }
+      if (e.key === "ArrowLeft") {
+        this.showPrevImage();
+      }
+    }
+    showNextImage() {
+      console.log("In .............showNextImage", this.currentIndex);
+      if (this.currentIndex + 1 < this.jsonData.length) {
+        this.currentIndex++;
+        const imgFullScreen = document.getElementById("imgFullScreen");
+        const b64fn = this.jsonData[this.currentIndex].b64fn;
+        console.log(b64fn);
+        const imageUrl = "/url/image/" + b64fn + ".jpg";
+        imgFullScreen.src = imageUrl;
+      }
+    }
+    showPrevImage() {
+      console.log("In .............showPrevImage", this.currentIndex);
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        const imgFullScreen = document.getElementById("imgFullScreen");
+        const b64fn = this.jsonData[this.currentIndex].b64fn;
+        console.log(b64fn);
+        const imageUrl = "/url/image/" + b64fn + ".jpg";
+        imgFullScreen.src = imageUrl;
       }
     }
     // Function to enter fullscreen
@@ -126,7 +157,9 @@
   }
   function imgClick(jsonData, i) {
     console.log("in imgClick...........", i, jsonData);
-    const iu = new imageUtils(jsonData);
+    const onlyPics = jsonData.filter((p) => p.fn.endsWith(".jpg"));
+    console.log(onlyPics);
+    const iu = new imageUtils(onlyPics);
     iu.showImageFullscreen(i);
   }
   function addImage(imgData, jsonData, i) {
