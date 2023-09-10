@@ -118,6 +118,7 @@
   // src/index.js
   var root = "//BRESDSK-MAHMED/DATA/pictures/equations";
   var currentpath = root;
+  var currentfolder = "";
   var b64currentpath;
   console.log("starting client.......");
   var view = "<H1>Hello World!....</H1>";
@@ -156,6 +157,7 @@
           }
         }
       );
+      addFolder({ fn: "..(Parent)  " });
       onlyFolders.map(
         (item, i) => {
           console.log(item.b64fn);
@@ -197,7 +199,12 @@
   }
   function folderClick(item) {
     console.log("in folderClick...........", item);
-    currentpath = currentpath + "/" + item.fn;
+    if (item.fn.includes("(Parent)")) {
+      currentpath = currentpath.replace("/" + currentfolder, "");
+    } else {
+      currentpath = currentpath + "/" + item.fn;
+      currentfolder = item.fn;
+    }
     main();
   }
   function addImage(imgData, jsonData, i) {

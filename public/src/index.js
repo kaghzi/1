@@ -3,6 +3,7 @@ import imageUtils from './imageUtils.js'
 
 const root = '//BRESDSK-MAHMED/DATA/pictures/equations';
 var currentpath= root;
+var currentfolder = '';
 var b64currentpath;
 
 console.log('starting client.......')
@@ -52,6 +53,7 @@ async function main() {
             }
         );
 
+        addFolder({fn: '..(Parent)  '});
         onlyFolders.map((item, i) => 
             {
                 console.log(item.b64fn);
@@ -112,7 +114,15 @@ async function fetchDataFromUrl(url) {
   function folderClick(item)
   {
       console.log('in folderClick...........',item);
-      currentpath = currentpath + '/' + item.fn;
+      if(item.fn.includes("(Parent)"))
+      {
+        currentpath = currentpath.replace('/' + currentfolder, '');
+      }
+      else
+      {
+        currentpath = currentpath + '/' + item.fn;
+        currentfolder = item.fn;
+      }
       main();
   }
     
