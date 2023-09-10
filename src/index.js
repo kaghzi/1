@@ -45,8 +45,7 @@ async function f2(req, res, next){
 const folderPath = '//BRESDSK-MAHMED/Data/Pictures/Equations';
 async function f3(req, res, next){
     debug('In function f3.....');
-    const parsedUrl = url.parse(req.url);
-    const b64fn = req.path.replace('/url/image/','');
+    const b64fn = (req.path.replace('/url/image/','') + '__EOL__').replace('.jpg__EOL__','');
     console.log(b64fn);
     const filename = Utf8Base64Converter.decodeFromBase64(b64fn);
     res.sendFile(folderPath + '/' + filename);

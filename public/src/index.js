@@ -22,12 +22,12 @@ async function main() {
 
         const thumbnails = await fetchDataFromUrl("url/thumb.json");
         console.log(thumbnails);
-        jsonData.map(item => 
+        jsonData.map((item, i) => 
             {
                 console.log(item.b64fn);
                 if(item.fn.endsWith('jpg')){
 
-                    addImage(thumbnails.find(tn => tn.b64fn===item.b64fn));
+                    addImage(thumbnails.find(tn => tn.b64fn===item.b64fn), jsonData, i);
                 }
             }
         );
@@ -62,8 +62,20 @@ async function fetchDataFromUrl(url) {
 
 
  
+function imgClick(jsonData, i)
+{
+    console.log('in imgClick...........',i,jsonData);
 
-function addImage(imgData)
+    // const b64fn = img["data-b64fn"];
+    //   console.log(b64fn);
+
+    //   const imageUrl = "/url/image/"+b64fn + '.jpg';
+      const iu=new imageUtils(jsonData);
+      iu.showImageFullscreen(i);
+}
+
+
+function addImage(imgData, jsonData, i)
 {
     //console.log(imgData);
     {
@@ -74,7 +86,7 @@ function addImage(imgData)
 
         const xthis =this;
         const linkElement = document.createElement("a");
-        linkElement.onclick = imageUtils.imgClick;
+        linkElement.onclick = (e) => imgClick(jsonData, i);
         linkElement.appendChild(imgElement);
         linkElement.img = imgElement;
 
@@ -88,5 +100,4 @@ function addImage(imgData)
         document.getElementById('divThumbs').appendChild(divElement);
     }
 }
-
 
