@@ -5,13 +5,16 @@
   "type": "module",
   "main": "build.js",
   "scripts": {
-    "start": "node --watch src build.js; node app.js"
+    "start": "@powershell -Command $env:DEBUG='*'; node --watch src build.js; node app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "debug": "^4.3.4",
     "esbuild": "^0.19.2",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "image-thumbnail": "^1.0.15",
+    "import": "^0.0.6"
   }
 }
