@@ -2,13 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import imageThumbnail from 'image-thumbnail';
 import debugPkg from 'debug';
+import mime from 'mime-types'
+
 const debug = debugPkg('FILES>>> ')
 
 import Utf8Base64Converter from '../src/Utf8Base64Converter.js'
 
 export default class FileLister {
   constructor(folderPath) {
-    this.folderPath = '//BRESDSK-MAHMED/Data/Pictures/Equations';
+    this.folderPath = folderPath;
   }
 
   listFiles() {
@@ -43,7 +45,13 @@ export default class FileLister {
     {
         const x = this.listFiles();
         let i=0;
-        const json = x.map(value => ({ order: i++, "fn": value, "b64fn": Utf8Base64Converter.encodeToBase64(value)}));
+        const json = x.map(value => 
+            {
+                const stats = fs.statSync(this.folderPath + '/' + value);
+                const mimeType = mime.lookup(this.folderPath + '/' + value);
+                return { order: i++, "fn": value, "b64fn": Utf8Base64Converter.encodeToBase64(value), isDir: (stats.isDirectory()), mimeType, isImage: (mimeType.toString().startsWith('image/'))};
+            }
+        )
         console.log(json);
         await fs.writeFileSync(this.folderPath + '/' + 'metadata.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
     }
@@ -63,9 +71,8 @@ export default class FileLister {
         {
             const value = x[i].fn;
             console.log(this.folderPath + '/' + value);
-            if(value.endsWith('jpg')){
+            if(x[i].isImage){
                 const thData = await this.getThumbnailStr(this.folderPath + '/' + value);
-                console.log(thData.length);
                 json.push({b64fn: (x[i].b64fn), th: thData});
                 console.log(json.length);
                 //console.log(json);

@@ -20,15 +20,29 @@ async function main() {
         console.log('Fetched data:', jsonData);
         jsonData.map(p=>console.log(p.fn, Utf8Base64Converter.decodeFromBase64(p.b64fn)));
 
+        const onlyPics = jsonData.filter(p=>p.isImage);
+        console.log(onlyPics);
+        const onlyFolders = jsonData.filter(p=>p.isDir);
+        console.log(onlyFolders);
+
         const thumbnails = await fetchDataFromUrl("url/thumb.json");
         console.log(thumbnails);
-        jsonData.map((item, i) => 
+
+        onlyPics.map((item, i) => 
             {
                 console.log(item.b64fn);
-                if(item.fn.endsWith('jpg')){
+                if(item.isImage){
 
-                    addImage(thumbnails.find(tn => tn.b64fn===item.b64fn), jsonData, i);
+                    addImage(thumbnails.find(tn => tn.b64fn===item.b64fn), onlyPics, i);
                 }
+            }
+        );
+
+        onlyFolders.map((item, i) => 
+            {
+                console.log(item.b64fn);
+                addFolder(item);
+            
             }
         );
 
@@ -39,6 +53,19 @@ async function main() {
 }
 
 
+function addFolder(item)
+{    
+    const imgElement = document.createElement("img");
+    imgElement.alt=item.fn;
+
+    const linkElement = document.createElement("a");
+    linkElement.href = '/url/folder/' + item.b64fn;
+    linkElement.appendChild(imgElement);
+    linkElement.img = imgElement;
+
+    document.getElementById('divDirs').appendChild(linkElement);
+    return;
+}
 
 async function fetchDataFromUrl(url) {
     console.log('in fetch...');
@@ -62,44 +89,34 @@ async function fetchDataFromUrl(url) {
 
 
  
-function imgClick(jsonData, i)
+function imgClick(onlyPics, i)
 {
-    console.log('in imgClick...........',i,jsonData);
-
-    // const b64fn = img["data-b64fn"];
-    //   console.log(b64fn);
-
-    //   const imageUrl = "/url/image/"+b64fn + '.jpg';
-      const onlyPics = jsonData.filter(p=>p.fn.endsWith('.jpg'));
-      console.log(onlyPics);
-      const iu=new imageUtils(onlyPics);
-      iu.showImageFullscreen(i);
+    console.log('in imgClick...........',i,onlyPics);
+    (new imageUtils(onlyPics)).showImageFullscreen(i);
 }
 
 
 function addImage(imgData, jsonData, i)
 {
-    //console.log(imgData);
-    {
-        console.log(imgData);
-        const imgElement = document.createElement("img");
-        imgElement.src="data:image/png;base64," +imgData.th;
-        imgElement["data-b64fn"]=imgData.b64fn;
+    
+    console.log(imgData);
+    const imgElement = document.createElement("img");
+    imgElement.src="data:image/png;base64," +imgData.th;
+    imgElement["data-b64fn"]=imgData.b64fn;
 
-        const xthis =this;
-        const linkElement = document.createElement("a");
-        linkElement.onclick = (e) => imgClick(jsonData, i);
-        linkElement.appendChild(imgElement);
-        linkElement.img = imgElement;
+    const xthis =this;
+    const linkElement = document.createElement("a");
+    linkElement.onclick = (e) => imgClick(jsonData, i);
+    linkElement.appendChild(imgElement);
+    linkElement.img = imgElement;
 
-        const divElement = document.createElement("div");
-        divElement.className="c1";
+    const divElement = document.createElement("div");
+    divElement.className="c1";
 
-        divElement.appendChild(linkElement);
+    divElement.appendChild(linkElement);
 
 
-        //document.getElementById('divThumbs').appendChild(linkElement);
-        document.getElementById('divThumbs').appendChild(divElement);
-    }
+    //document.getElementById('divThumbs').appendChild(linkElement);
+    document.getElementById('divThumbs').appendChild(divElement);
 }
 
