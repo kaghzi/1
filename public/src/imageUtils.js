@@ -1,36 +1,11 @@
 export default class imageUtils {    
     jsonData;
+    keyDownListener;
 
     constructor(jsonData){
       this.jsonData = jsonData;
     }
 
-    // showImageFullscreenold(i) {
-    //   console.log('In showImageFullscreen..........', i);
-    //   const b64fn = this.jsonData[i].b64fn;
-    //   console.log(b64fn);
-
-    //   const imageUrl = "/url/image/"+b64fn + '.jpg';
-    //   // Create an image element
-    //   const img = new Image();
-    //   img.src = imageUrl;
-    
-    //   // Style the image for fullscreen display
-    //   img.style.position = 'fixed';
-    //   img.style.top = '0';
-    //   img.style.left = '0';
-    //   img.style.width = '100%';
-    //   img.style.height = '100%';
-    //   img.style.objectFit = 'contain';
-    //   img.style.backgroundColor = 'black'; // Optional: set background color
-    
-    //   // Add a click event listener to toggle fullscreen
-    //   img.addEventListener('click', this.clickHandler);
-    //   img.addEventListener('keypress', this.keypressHandler);
-
-    //   // Append the image to the document body
-    //   document.body.appendChild(img);
-    // }
     showImageFullscreen(i) {
       console.log('In showImageFullscreen..........', i);
       const b64fn = this.jsonData[i].b64fn;
@@ -39,6 +14,7 @@ export default class imageUtils {
 
       // Create a div element to hold the image
       const fullscreenDiv = document.createElement('div');
+      fullscreenDiv.id = 'fullscreenDiv';
       fullscreenDiv.style.position = 'fixed';
       fullscreenDiv.style.top = '0';
       fullscreenDiv.style.left = '0';
@@ -49,8 +25,8 @@ export default class imageUtils {
       // Create an image element and set its source
       const img = new Image();
       img.src = imageUrl;
-        img.style.width = '100%';
-        img.style.height = '100%';
+      img.style.width = '100%';
+      img.style.height = '100%';
       img.style.objectFit = 'contain'; // Maintain image aspect ratio
     
       // Add the image to the div
@@ -60,34 +36,45 @@ export default class imageUtils {
       document.body.appendChild(fullscreenDiv);
     
       // Toggle fullscreen on div click
-      fullscreenDiv.addEventListener('click', this.clickHandler);
-      fullscreenDiv.addEventListener('keypress', this.keypressHandler);
+      fullscreenDiv.addEventListener('dblclick', () => {this.toggleFullscreen(fullscreenDiv);});
+
+      this.keyDownListener = (e) => {this.keypressHandler(e, fullscreenDiv);};
+      document.addEventListener('keydown', this.keyDownListener);
     }
 
     clickHandler(e) {
       console.log('In clickHandler..........',e);
       console.log(e.target.parentElement);
-      const fullscreenDiv = e.target.parentElement
+      const fullscreenDiv = e.target
       if (document.fullscreenElement) {
         document.exitFullscreen();
-        fullscreenDiv.remove();
+        e.target.remove();
       } else {
         fullscreenDiv.requestFullscreen().catch((err) => {
           console.error('Error attempting to enable full-screen mode:', err);
         });
       }
-  }
 
-  keypressHandler(e) {
-      console.log('In keypressHandler..........');
-      const img = e.target
-      if (!document.fullscreenElement) {
-        img.requestFullscreen().catch((err) => {
-          console.error('Error attempting to enable full-screen mode:', err);
-        });
-      } else {
-        document.exitFullscreen();
-        img.remove();
-      }
+      console.log(document.activeElement);
+    }
+
+    keypressHandler(e, fullscreenDiv) {
+        console.log('In keypressHandler..........',e);
+        if (e.key === 'Escape') {
+          if (document.fullscreenElement) document.exitFullscreen();
+          fullscreenDiv.remove();
+        }
+    }
+
+  
+  // Function to enter fullscreen
+  toggleFullscreen(element) {
+    if (document.fullscreenElement) {
+      if (document.fullscreenElement === element) document.exitFullscreen();
+    } else {
+      element.requestFullscreen().catch((err) => {
+        console.error('Error attempting to enable full-screen mode:', err);
+      });
+    }
   }
 }
