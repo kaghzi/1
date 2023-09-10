@@ -13,10 +13,10 @@ export default class FileLister {
     this.folderPath = folderPath;
   }
 
-  listFiles() {
-    console.log('In listFiles......');
+  listFiles(folderPath) {
+    console.log('In listFiles......', folderPath);
     try {
-      const fileNames = fs.readdirSync(this.folderPath);
+      const fileNames = fs.readdirSync(folderPath);
       return fileNames;
     } catch (error) {
       console.error(`Error reading files from ${this.folderPath}: ${error.message}`);
@@ -39,63 +39,54 @@ export default class FileLister {
         console.error('Error parsing JSON:', ex);
     }     
   }
-  async createMetaData() {    
-    debug('In createMetaData......');
-    if(!fs.existsSync(this.folderPath + '/' + 'metadata.json'))
+  async createMetaData(folderPath) {    
+    debug('In createMetaData......', folderPath);
+    if(!fs.existsSync(folderPath + 'metadata.json'))
     {
-        const x = this.listFiles();
+        const x = this.listFiles(folderPath);
+        console.log('number of items in folder: =====> ' + x.length.toString());
         let i=0;
         const json = x.map(value => 
             {
-                const stats = fs.statSync(this.folderPath + '/' + value);
-                const mimeType = mime.lookup(this.folderPath + '/' + value);
+                console.log(value);
+                const stats = fs.statSync(folderPath + value);
+                //console.log(stats);
+                const mimeType = mime.lookup(folderPath  + value);
+                //console.log(mimeType);
                 return { order: i++, "fn": value, "b64fn": Utf8Base64Converter.encodeToBase64(value), isDir: (stats.isDirectory()), mimeType, isImage: (mimeType.toString().startsWith('image/'))};
             }
         )
         console.log(json);
-        await fs.writeFileSync(this.folderPath + '/' + 'metadata.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
+        await fs.writeFileSync(folderPath + 'metadata.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
     }
-    return this.folderPath + '/' + 'metadata.json';
+    return true;
   }
 
 
-  async createThumbnail() {    
-    debug('In createThumbnail......');
-    if(!fs.existsSync(this.folderPath + '/' + 'thumb.json'))
+  async createThumbnail(folderPath) {    
+    debug('In createThumbnail......', folderPath);
+    if(!fs.existsSync(folderPath + 'thumb.json'))
     {
-        const x = this.readJSON(this.folderPath + '/' + 'metadata.json');
+        const x = this.readJSON(this.folderPath + 'metadata.json');
         let i=0;
         let json = [];
 
         for(i=0; i<x.length; i++)
         {
             const value = x[i].fn;
-            console.log(this.folderPath + '/' + value);
+            debug(folderPath + value);
             if(x[i].isImage){
-                const thData = await this.getThumbnailStr(this.folderPath + '/' + value);
+                const thData = await this.getThumbnailStr(folderPath  + value);
                 json.push({b64fn: (x[i].b64fn), th: thData});
                 console.log(json.length);
                 //console.log(json);
             }
         }
 
-        // await x.forEach(async value => {
-        //         console.log(this.folderPath + '/' + value);
-        //         if(value.endsWith('jpg')){
-        //             const thData = await this.getThumbnailStr(this.folderPath + '/' + value);
-        //             console.log(thData.length);
-        //             json.push({th: thData});
-        //             console.log(json.length);
-        //         }
-        //     }
-        // )
-        console.log('all thumbnails done.......')
-        //const json = x.map(async value => { console.log(value); if(value.endsWith('jpg')) return ({'th': (await this.getThumbnailStr(this.folderPath + '/' + value))})}); 
-        console.log('000000000000000000........................000000000000000000000000000000000000000000000000000000000000..........................00000000000000000000000000000');
-        //console.log(json);
-        await fs.writeFileSync(this.folderPath + '/' + 'thumb.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
+        debug('all thumbnails done.......');
+        await fs.writeFileSync(folderPath + 'thumbs.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
     }
-    return this.folderPath + '/' + 'thumb.json';
+    return true;
   }
 
     async getThumbnailStr(imgPath)

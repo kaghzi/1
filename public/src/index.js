@@ -1,7 +1,8 @@
 import Utf8Base64Converter from '../src/Utf8Base64Converter.js'
 import imageUtils from './imageUtils.js'
 
-
+const root = '//BRESDSK-MAHMED/DATA';
+var currentpath= root;
 console.log('starting client.......')
 const view = '<H1>Hello World!....1234</H1>'
 
@@ -15,7 +16,7 @@ main();
 async function main() {
     console.log('in Main....');
     try {
-        const jsonData = await fetchDataFromUrl("url/metadata.json");
+        const jsonData = await fetchDataFromUrl('url/metadata/' + Utf8Base64Converter.encodeToBase64(currentpath) + '/metadata.json');
         // Use the fetched JSON data here
         console.log('Fetched data:', jsonData);
         jsonData.map(p=>console.log(p.fn, Utf8Base64Converter.decodeFromBase64(p.b64fn)));
@@ -25,7 +26,7 @@ async function main() {
         const onlyFolders = jsonData.filter(p=>p.isDir);
         console.log(onlyFolders);
 
-        const thumbnails = await fetchDataFromUrl("url/thumb.json");
+        const thumbnails = await fetchDataFromUrl('url/thumbnails/' + Utf8Base64Converter.encodeToBase64(currentpath) + "/thumbs.json");
         console.log(thumbnails);
 
         onlyPics.map((item, i) => 

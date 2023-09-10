@@ -113,6 +113,8 @@
   };
 
   // src/index.js
+  var root = "//BRESDSK-MAHMED/DATA";
+  var currentpath = root;
   console.log("starting client.......");
   var view = "<H1>Hello World!....1234</H1>";
   var divMain = document.getElementById("divMain");
@@ -123,14 +125,14 @@
   async function main() {
     console.log("in Main....");
     try {
-      const jsonData = await fetchDataFromUrl("url/metadata.json");
+      const jsonData = await fetchDataFromUrl("url/metadata/" + Utf8Base64Converter.encodeToBase64(currentpath) + "/metadata.json");
       console.log("Fetched data:", jsonData);
       jsonData.map((p) => console.log(p.fn, Utf8Base64Converter.decodeFromBase64(p.b64fn)));
       const onlyPics = jsonData.filter((p) => p.isImage);
       console.log(onlyPics);
       const onlyFolders = jsonData.filter((p) => p.isDir);
       console.log(onlyFolders);
-      const thumbnails = await fetchDataFromUrl("url/thumb.json");
+      const thumbnails = await fetchDataFromUrl("url/thumbnails/" + Utf8Base64Converter.encodeToBase64(currentpath) + "/thumbs.json");
       console.log(thumbnails);
       onlyPics.map(
         (item, i) => {
