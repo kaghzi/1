@@ -16,15 +16,17 @@
     jsonData;
     currentIndex;
     keyDownListener;
-    constructor(jsonData) {
+    b64currentpath;
+    constructor(jsonData, b64currentpath2) {
       this.jsonData = jsonData;
+      this.b64currentpath = b64currentpath2;
     }
     showImageFullscreen(i) {
       console.log("In showImageFullscreen..........", i);
       this.currentIndex = i;
       const b64fn = this.jsonData[i].b64fn;
       console.log(b64fn);
-      const imageUrl = "/url/image/" + b64fn + ".jpg";
+      const imageUrl = "/url/image/" + this.b64currentpath + "__SLASH__" + b64fn + ".jpg";
       const fullscreenDiv = document.createElement("div");
       fullscreenDiv.id = "fullscreenDiv";
       fullscreenDiv.style.position = "fixed";
@@ -68,6 +70,7 @@
       if (e.key === "Escape") {
         if (document.fullscreenElement)
           document.exitFullscreen();
+        document.removeEventListener("keydown", this.keyDownListener);
         fullscreenDiv.remove();
       }
       if (e.key === "ArrowRight") {
@@ -84,7 +87,7 @@
         const imgFullScreen = document.getElementById("imgFullScreen");
         const b64fn = this.jsonData[this.currentIndex].b64fn;
         console.log(b64fn);
-        const imageUrl = "/url/image/" + b64fn + ".jpg";
+        const imageUrl = "/url/image/" + this.b64currentpath + "__SLASH__" + b64fn + ".jpg";
         imgFullScreen.src = imageUrl;
       }
     }
@@ -95,7 +98,7 @@
         const imgFullScreen = document.getElementById("imgFullScreen");
         const b64fn = this.jsonData[this.currentIndex].b64fn;
         console.log(b64fn);
-        const imageUrl = "/url/image/" + b64fn + ".jpg";
+        const imageUrl = "/url/image/" + this.b64currentpath + "__SLASH__" + b64fn + ".jpg";
         imgFullScreen.src = imageUrl;
       }
     }
@@ -113,26 +116,37 @@
   };
 
   // src/index.js
-  var root = "//BRESDSK-MAHMED/DATA";
+  var root = "//BRESDSK-MAHMED/DATA/pictures/equations";
   var currentpath = root;
+  var b64currentpath;
   console.log("starting client.......");
-  var view = "<H1>Hello World!....1234</H1>";
+  var view = "<H1>Hello World!....</H1>";
   var divMain = document.getElementById("divMain");
   if (divMain) {
     divMain.innerHTML = view;
   }
   main();
+  function clean() {
+    const divThumbs = document.getElementById("divThumbs");
+    while (divThumbs.firstChild)
+      divThumbs.removeChild(divThumbs.firstChild);
+    const divDirs = document.getElementById("divDirs");
+    while (divDirs.firstChild)
+      divDirs.removeChild(divDirs.firstChild);
+  }
   async function main() {
     console.log("in Main....");
+    clean();
     try {
-      const jsonData = await fetchDataFromUrl("url/metadata/" + Utf8Base64Converter.encodeToBase64(currentpath) + "/metadata.json");
+      b64currentpath = Utf8Base64Converter.encodeToBase64(currentpath);
+      const jsonData = await fetchDataFromUrl("url/metadata/" + b64currentpath + "/metadata.json");
       console.log("Fetched data:", jsonData);
       jsonData.map((p) => console.log(p.fn, Utf8Base64Converter.decodeFromBase64(p.b64fn)));
       const onlyPics = jsonData.filter((p) => p.isImage);
       console.log(onlyPics);
       const onlyFolders = jsonData.filter((p) => p.isDir);
       console.log(onlyFolders);
-      const thumbnails = await fetchDataFromUrl("url/thumbnails/" + Utf8Base64Converter.encodeToBase64(currentpath) + "/thumbs.json");
+      const thumbnails = await fetchDataFromUrl("url/thumbnails/" + b64currentpath + "/thumbs.json");
       console.log(thumbnails);
       onlyPics.map(
         (item, i) => {
@@ -156,7 +170,7 @@
     const imgElement = document.createElement("img");
     imgElement.alt = item.fn;
     const linkElement = document.createElement("a");
-    linkElement.href = "/url/folder/" + item.b64fn;
+    linkElement.onclick = (e) => folderClick(item);
     linkElement.appendChild(imgElement);
     linkElement.img = imgElement;
     document.getElementById("divDirs").appendChild(linkElement);
@@ -177,18 +191,22 @@
       console.error("Fetch error:", error);
     }
   }
-  function imgClick(onlyPics, i) {
-    console.log("in imgClick...........", i, onlyPics);
-    new imageUtils(onlyPics).showImageFullscreen(i);
+  function imgClick(onlyPics, i, b64currentpath2) {
+    console.log("in imgClick...........", i, onlyPics, b64currentpath2);
+    new imageUtils(onlyPics, b64currentpath2).showImageFullscreen(i);
+  }
+  function folderClick(item) {
+    console.log("in folderClick...........", item);
+    currentpath = currentpath + "/" + item.fn;
+    main();
   }
   function addImage(imgData, jsonData, i) {
     console.log(imgData);
     const imgElement = document.createElement("img");
     imgElement.src = "data:image/png;base64," + imgData.th;
-    imgElement["data-b64fn"] = imgData.b64fn;
     const xthis = this;
     const linkElement = document.createElement("a");
-    linkElement.onclick = (e) => imgClick(jsonData, i);
+    linkElement.onclick = (e) => imgClick(jsonData, i, b64currentpath);
     linkElement.appendChild(imgElement);
     linkElement.img = imgElement;
     const divElement = document.createElement("div");

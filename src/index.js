@@ -42,8 +42,11 @@ async function f3(req, res, next){
     debug('In function f3.....');
     const b64fn = (req.path.replace('/url/image/','') + '__EOL__').replace('.jpg__EOL__','');
     console.log(b64fn);
-    const filename = Utf8Base64Converter.decodeFromBase64(b64fn);
-    res.sendFile(folderPath + '/' + filename);
+    const parts = b64fn.split('__SLASH__');
+    debug(parts);
+    const filename = Utf8Base64Converter.decodeFromBase64(parts[0]) + '/' + Utf8Base64Converter.decodeFromBase64(parts[1]);
+    debug(b64fn, filename);
+    res.sendFile(filename);
 }
 
 async function f4(req, res, next){

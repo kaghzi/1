@@ -1,10 +1,12 @@
 import Utf8Base64Converter from '../src/Utf8Base64Converter.js'
 import imageUtils from './imageUtils.js'
 
-const root = '//BRESDSK-MAHMED/DATA';
+const root = '//BRESDSK-MAHMED/DATA/pictures/equations';
 var currentpath= root;
+var b64currentpath;
+
 console.log('starting client.......')
-const view = '<H1>Hello World!....1234</H1>'
+const view = '<H1>Hello World!....</H1>'
 
 const divMain = document.getElementById('divMain');
 if(divMain) {
@@ -13,10 +15,21 @@ if(divMain) {
 
 main();
 
+function clean()
+{
+    const divThumbs = document.getElementById('divThumbs');
+    while (divThumbs.firstChild) divThumbs.removeChild(divThumbs.firstChild);
+
+    const divDirs = document.getElementById('divDirs');
+    while (divDirs.firstChild) divDirs.removeChild(divDirs.firstChild);
+}
+
 async function main() {
     console.log('in Main....');
+    clean();
     try {
-        const jsonData = await fetchDataFromUrl('url/metadata/' + Utf8Base64Converter.encodeToBase64(currentpath) + '/metadata.json');
+        b64currentpath = Utf8Base64Converter.encodeToBase64(currentpath);
+        const jsonData = await fetchDataFromUrl('url/metadata/' + b64currentpath + '/metadata.json');
         // Use the fetched JSON data here
         console.log('Fetched data:', jsonData);
         jsonData.map(p=>console.log(p.fn, Utf8Base64Converter.decodeFromBase64(p.b64fn)));
@@ -26,7 +39,7 @@ async function main() {
         const onlyFolders = jsonData.filter(p=>p.isDir);
         console.log(onlyFolders);
 
-        const thumbnails = await fetchDataFromUrl('url/thumbnails/' + Utf8Base64Converter.encodeToBase64(currentpath) + "/thumbs.json");
+        const thumbnails = await fetchDataFromUrl('url/thumbnails/' + b64currentpath + "/thumbs.json");
         console.log(thumbnails);
 
         onlyPics.map((item, i) => 
@@ -60,7 +73,7 @@ function addFolder(item)
     imgElement.alt=item.fn;
 
     const linkElement = document.createElement("a");
-    linkElement.href = '/url/folder/' + item.b64fn;
+    linkElement.onclick = (e) => folderClick(item);
     linkElement.appendChild(imgElement);
     linkElement.img = imgElement;
 
@@ -90,12 +103,19 @@ async function fetchDataFromUrl(url) {
 
 
  
-function imgClick(onlyPics, i)
-{
-    console.log('in imgClick...........',i,onlyPics);
-    (new imageUtils(onlyPics)).showImageFullscreen(i);
-}
+  function imgClick(onlyPics, i, b64currentpath)
+  {
+      console.log('in imgClick...........',i,onlyPics,b64currentpath);
+      (new imageUtils(onlyPics, b64currentpath)).showImageFullscreen(i);
+  }
 
+  function folderClick(item)
+  {
+      console.log('in folderClick...........',item);
+      currentpath = currentpath + '/' + item.fn;
+      main();
+  }
+    
 
 function addImage(imgData, jsonData, i)
 {
@@ -103,11 +123,10 @@ function addImage(imgData, jsonData, i)
     console.log(imgData);
     const imgElement = document.createElement("img");
     imgElement.src="data:image/png;base64," +imgData.th;
-    imgElement["data-b64fn"]=imgData.b64fn;
 
     const xthis =this;
     const linkElement = document.createElement("a");
-    linkElement.onclick = (e) => imgClick(jsonData, i);
+    linkElement.onclick = (e) => imgClick(jsonData, i, b64currentpath);
     linkElement.appendChild(imgElement);
     linkElement.img = imgElement;
 

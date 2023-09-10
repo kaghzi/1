@@ -9,9 +9,6 @@ const debug = debugPkg('FILES>>> ')
 import Utf8Base64Converter from '../src/Utf8Base64Converter.js'
 
 export default class FileLister {
-  constructor(folderPath) {
-    this.folderPath = folderPath;
-  }
 
   listFiles(folderPath) {
     console.log('In listFiles......', folderPath);
@@ -65,9 +62,9 @@ export default class FileLister {
 
   async createThumbnail(folderPath) {    
     debug('In createThumbnail......', folderPath);
-    if(!fs.existsSync(folderPath + 'thumb.json'))
+    if(!fs.existsSync(folderPath + 'thumbs.json'))
     {
-        const x = this.readJSON(this.folderPath + 'metadata.json');
+        const x = this.readJSON(folderPath + 'metadata.json');
         let i=0;
         let json = [];
 

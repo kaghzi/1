@@ -2,9 +2,11 @@ export default class imageUtils {
     jsonData;
     currentIndex;
     keyDownListener;
+    b64currentpath;
 
-    constructor(jsonData){
+    constructor(jsonData, b64currentpath){
       this.jsonData = jsonData;
+      this.b64currentpath = b64currentpath
     }
 
     showImageFullscreen(i) {
@@ -12,7 +14,7 @@ export default class imageUtils {
       this.currentIndex=i;
       const b64fn = this.jsonData[i].b64fn;
       console.log(b64fn);
-      const imageUrl = "/url/image/"+b64fn + '.jpg';
+      const imageUrl = "/url/image/" + this.b64currentpath + '__SLASH__' + b64fn + '.jpg';
 
       // Create a div element to hold the image
       const fullscreenDiv = document.createElement('div');
@@ -64,7 +66,8 @@ export default class imageUtils {
     keypressHandler(e, fullscreenDiv) {
         console.log('In keypressHandler..........',e);
         if (e.key === 'Escape') {
-          if (document.fullscreenElement) document.exitFullscreen();
+          if (document.fullscreenElement) document.exitFullscreen();          
+          document.removeEventListener('keydown', this.keyDownListener);
           fullscreenDiv.remove();
         }
         
@@ -86,7 +89,7 @@ export default class imageUtils {
           
           const b64fn = this.jsonData[this.currentIndex].b64fn;
           console.log(b64fn);
-          const imageUrl = "/url/image/"+b64fn + '.jpg';
+          const imageUrl = "/url/image/" + this.b64currentpath + '__SLASH__' + b64fn + '.jpg';
 
           imgFullScreen.src = imageUrl;
       }
@@ -104,7 +107,7 @@ export default class imageUtils {
         
         const b64fn = this.jsonData[this.currentIndex].b64fn;
         console.log(b64fn);
-        const imageUrl = "/url/image/"+b64fn + '.jpg';
+        const imageUrl = "/url/image/" + this.b64currentpath + '__SLASH__' + b64fn + '.jpg';
 
         imgFullScreen.src = imageUrl;
       }
