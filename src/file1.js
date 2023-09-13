@@ -45,7 +45,7 @@ export default class FileLister {
         let i=0;
         const json = x.map(value => 
             {
-                console.log(value);
+                //console.log(value);
                 const stats = fs.statSync(folderPath + value);
                 //console.log(stats);
                 const mimeType = mime.lookup(folderPath  + value);
@@ -53,7 +53,7 @@ export default class FileLister {
                 return { order: i++, "fn": value, "b64fn": Utf8Base64Converter.encodeToBase64(value), isDir: (stats.isDirectory()), mimeType, isImage: (mimeType.toString().startsWith('image/'))};
             }
         )
-        console.log(json);
+        //console.log(json);
         await fs.writeFileSync(folderPath + 'metadata.json', JSON.stringify(json, null, 2), 'utf8', (err)=>{console.log({err})});
     }
     return true;
@@ -97,7 +97,7 @@ export default class FileLister {
                     width : 200}
                 );
             const base64Str = await thumbnail.toString('base64');
-            console.log('===================================      ' + imgPath + '         ===================================================')
+            //console.log('===================================      ' + imgPath + '         ===================================================')
             //console.log(base64Str);
             //console.log(typeof base64Str);
             //console.log( base64Str.length);
