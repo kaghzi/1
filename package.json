@@ -5,14 +5,17 @@
   "type": "module",
   "main": "build.js",
   "scripts": {
-    "start": "@powershell -Command $env:DEBUG='*'; node --watch src build.js; node app.js"
+    "watch": "esbuild ./src --watch --outfile=app.cjs --bundle --platform=node --packages=external --format=cjs",
+    "build": "esbuild ./src --outfile=app.cjs --bundle --platform=node --packages=external --format=cjs",
+    "prestart": "esbuild ./src --outfile=app.cjs --bundle --platform=node --packages=external --format=cjs",
+    "start": "@powershell -Command $env:DEBUG='*'; node --watch app.cjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "debug": "^4.3.4",
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.16.17",
     "express": "^4.18.2",
     "image-thumbnail": "^1.0.15",
     "import": "^0.0.6",
